@@ -1,0 +1,10 @@
+[ "cowboy": {:git, "git://github.com/extend/cowboy.git", "bbee34fe1638b742796b00b39c0859395a752167", []},
+  "dynamo": {:git, "git://github.com/elixir-lang/dynamo.git", "cc281871cec7dc22ab0aa49b317d2829e3f37d0f", []},
+  "ex_doc": {:git, "git://github.com/elixir-lang/ex_doc.git", "745f15b4659aca79a19ed28c719b9354ad916898", [{:ref, "745f15b4659aca79a19ed28c719b9354ad916898"}]},
+  "gru": {:git, "git://github.com/BananaLtd/gru.git", "27815b4648a0efd32d57cc4cd1218d7882100328", []},
+  "hackney": {:git, "git://github.com/benoitc/hackney.git", "5b0f7eb949ebebd6fabfbc4e08a7b7231850606a", []},
+  "json": {:git, "git://github.com/cblage/elixir-json.git", "3573eb996c893d384a58ad47e83f48a82fa9d990", [{:tag, "v0.2.3"}]},
+  "mimetypes": {:git, "git://github.com/spawngrid/mimetypes.git", "47d37a977a7d633199822bf6b08353007483d00f", []},
+  "minion": {:git, "git://github.com/BananaLtd/minion.git", "2604c41f918a2a7a1054cb9f918eaf1aceb357fb", []},
+  "ranch": {:git, "git://github.com/extend/ranch.git", "41705752ffc7e3ecb96eef8374015ead4ca7f699", [{:ref, "0.8.5"}]},
+  "random": {:git, "git://github.com/mururu/elixir-random.git", "e6442fa2273eed85b3f56e5f1628544295ed8913", []} ]

@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title><%= @title %></title>
+  <link rel="shortcut icon" href="/static/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+	
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
+	<link rel="apple-touch-icon" href="/static/apple-touch-icon-precomposed.png"/>
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+</head>
+<body>
+	<div class="container">
+		<h3>Minions</h3>
+
+		<ul class="nav nav-tabs">
+		  <%= lc node inlist @nodes do %>
+	  		<%= if String.contains?("#{node}", "#{@selected_node}") do %>
+		  		<li class="active"><a href="/<%= node %>"><%= node %></a></li>
+				<% else %>
+		  		<li><a href="/<%= node %>"><%= node %></a></li>
+				<% end %>
+		  <% end %>
+		</ul>
+
+		<br>
+		
+		<div class="container">
+			<%= if @selected_node do %>
+				<div class="btn-group">
+					<%= lc station inlist HashDict.to_list(@stations) do %>
+						<% {station_name, station_url} = station %>
+	 		  		<%= if String.contains?("#{station_url}", "#{@current_station}") do %>
+				  		<button type="button" class="btn btn-primary" onClick="location.href='/<%= @selected_node %>/<%= station_name %>'";><%= station_name %></button>
+						<% else %>
+				  		<button type="button" class="btn btn-default" onClick="location.href='/<%= @selected_node %>/<%= station_name %>'";><%= station_name %></button>
+						<% end %>
+		  		<% end %>
+				</div>
+				<div class="btn-group">
+		  		<button type="button" class="btn btn-default" onClick="location.href='/<%= @selected_node %>/start_daemon'";>Start daemon</button>
+				</div>
+				<%= inspect(@mpd_daemon_last_run) %>
+			<% else %>
+				<p>Please choose a minion</p>
+			<% end %>
+		</div>
+
+	</div>
+
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="//code.jquery.com/jquery.js"></script>
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>
