@@ -20,10 +20,12 @@
 
 		<ul class="nav nav-tabs">
 		  <%= lc node inlist @nodes do %>
-	  		<%= if String.contains?("#{node}", "#{@selected_node}") do %>
-		  		<li class="active"><a href="/<%= node %>"><%= node %></a></li>
+  			<% [name, host] = String.split(to_string(node), "@") %>
+
+	  		<%= if String.contains?(to_string(node), to_string(@selected_node)) do %>
+		  		<li class="active"><a href="/<%= node %>"><%= host %></a></li>
 				<% else %>
-		  		<li><a href="/<%= node %>"><%= node %></a></li>
+		  		<li><a href="/<%= node %>"><%= host %></a></li>
 				<% end %>
 		  <% end %>
 		</ul>
@@ -32,20 +34,35 @@
 		
 		<div class="container">
 			<%= if @selected_node do %>
-				<div class="btn-group">
-					<%= lc station inlist HashDict.to_list(@stations) do %>
-						<% {station_name, station_url} = station %>
-	 		  		<%= if String.contains?("#{station_url}", "#{@current_station}") do %>
-				  		<button type="button" class="btn btn-primary" onClick="location.href='/<%= @selected_node %>/<%= station_name %>'";><%= station_name %></button>
-						<% else %>
-				  		<button type="button" class="btn btn-default" onClick="location.href='/<%= @selected_node %>/<%= station_name %>'";><%= station_name %></button>
-						<% end %>
-		  		<% end %>
+
+				<div class="panel panel-default">
+				  <div class="panel-heading">Stations</div>
+					<div class="panel-body">
+						<div class="btn-group">
+							<%= lc {station_name, station_url} inlist HashDict.to_list(@stations) do %>
+			 		  		<%= if String.contains?("#{station_url}", "#{@current_station}") do %>
+						  		<button type="button" class="btn btn-primary" onClick="location.href='/<%= @selected_node %>/<%= station_name %>'";><%= station_name %></button>
+								<% else %>
+						  		<button type="button" class="btn btn-default" onClick="location.href='/<%= @selected_node %>/<%= station_name %>'";><%= station_name %></button>
+								<% end %>
+				  		<% end %>
+						</div>
+  				</div>
 				</div>
-				<div class="btn-group">
-		  		<button type="button" class="btn btn-default" onClick="location.href='/<%= @selected_node %>/start_daemon'";>Start daemon</button>
+
+				<div class="panel panel-default">
+				  <div class="panel-heading">MPD Daemon</div>
+					<div class="panel-body">
+    				<p>
+							<% [[year, month, day], [hour, minute, second]] = @mpd_daemon_last_run %>
+							Last run: <%= "#{day}.#{month}.#{year} #{hour}:#{minute}:#{second}" %>
+    				</p>
+
+						<div class="btn-group">
+					  	<button type="button" class="btn btn-default" onClick="location.href='/<%= @selected_node %>/start_daemon'";>Start daemon</button>
+						</div>
+  				</div>
 				</div>
-				<%= inspect(@mpd_daemon_last_run) %>
 			<% else %>
 				<p>Please choose a minion</p>
 			<% end %>
