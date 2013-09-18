@@ -52,18 +52,28 @@ defmodule ApplicationRouter do
     selected_node = conn.params[:node]
 
     execute_on_remote = quote do
-      Gru.repeat(1000, "mpc current -f \"%file%\"", fn(node, result) ->
-        current_station = Minion.State.get("current_station")
+      daemon_pid = Process.whereis(:mpd_daemon)
+      if is_pid(daemon_pid) and Process.alive?(daemon_pid) do
+        Process.unregister(:mpd_daemon)
+        Process.exit(daemon_pid, :normal)
+      end
 
-        Minion.State.set("mpd_daemon_last_run", :calendar.universal_time)
+      pid = Process.spawn(fn()->
+        Gru.repeat(1000, "mpc current -f \"%file%\"", fn(node, result) ->
+          current_station = Minion.State.get("current_station")
 
-        case String.strip(result) do
-          ^current_station ->
-            Minion.me
-          _ ->
-            System.cmd "mpc clear && mpc add #{current_station} && mpc play"
-        end
+          Minion.State.set("mpd_daemon_last_run", :calendar.universal_time)
+
+          case String.strip(result) do
+            ^current_station ->
+              Minion.me
+            _ ->
+              System.cmd "mpc clear && mpc add #{current_station} && mpc play"
+          end
+        end)
       end)
+
+      Process.register(pid, :mpd_daemon)
     end
 
     Minion.execute([:"#{selected_node}"], Code, :eval_quoted, [execute_on_remote])
