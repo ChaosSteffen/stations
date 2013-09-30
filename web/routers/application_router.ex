@@ -81,7 +81,7 @@ defmodule ApplicationRouter do
     redirect! conn, to: "/#{selected_node}"
   end
 
-  get "/:node/:station" do
+  get "/:node/set_station/:station" do
     selected_node = conn.params[:node]
     selected_station = conn.params[:station]
 
@@ -97,4 +97,32 @@ defmodule ApplicationRouter do
     end)
   end
 
+  post "/:node/add_station" do
+    selected_node = conn.params[:node]
+  end
+
+  get "/:node/set_volume/:volume" do
+    selected_node = conn.params[:node]
+    volume = conn.params[:volume]
+
+    Gru.only [:"#{selected_node}"], "mpc volume #{volume}"
+
+    redirect! conn, to: "/#{selected_node}"
+  end
+
+  get "/:node/pause" do
+    selected_node = conn.params[:node]
+
+    Gru.only [:"#{selected_node}"], "mpc pause"
+
+    redirect! conn, to: "/#{selected_node}"
+  end
+
+  get "/:node/play" do
+    selected_node = conn.params[:node]
+
+    Gru.only [:"#{selected_node}"], "mpc play"
+
+    redirect! conn, to: "/#{selected_node}"
+  end
 end
