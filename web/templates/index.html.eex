@@ -41,9 +41,9 @@
 						<div class="btn-group">
 							<%= lc {station_name, station_url} inlist HashDict.to_list(@stations) do %>
 			 		  		<%= if String.contains?("#{station_url}", "#{@current_station}") do %>
-						  		<button type="button" class="btn btn-primary" onClick="location.href='/<%= @selected_node %>/<%= station_name %>'";><%= station_name %></button>
+						  		<button type="button" class="btn btn-primary" onClick="location.href='/<%= @selected_node %>/set_station/<%= station_name %>'";><%= station_name %></button>
 								<% else %>
-						  		<button type="button" class="btn btn-default" onClick="location.href='/<%= @selected_node %>/<%= station_name %>'";><%= station_name %></button>
+						  		<button type="button" class="btn btn-default" onClick="location.href='/<%= @selected_node %>/set_station/<%= station_name %>'";><%= station_name %></button>
 								<% end %>
 				  		<% end %>
 						</div>
