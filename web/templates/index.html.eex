@@ -67,10 +67,7 @@
 				<div class="panel panel-default">
 				  <div class="panel-heading">MPD Daemon</div>
 					<div class="panel-body">
-    				<p>
-							<% [[year, month, day], [hour, minute, second]] = @mpd_daemon_last_run %>
-							Last run: <%= "#{day}.#{month}.#{year} #{hour}:#{minute}:#{second}" %>
-    				</p>
+    				<p>Last run: <%= date_string_from_array(@mpd_daemon_last_run) %></p>
 
 						<div class="btn-group">
 					  	<button type="button" class="btn btn-default" onClick="jQuery.get('/<%= @selected_node %>/start_daemon').success(location.reload());";>Start daemon</button>
