@@ -13,8 +13,7 @@ defmodule ApplicationRouter do
   # forward "/posts", to: PostsRouter
 
   get "/" do
-    conn = conn.assign(:nodes, Minion.other)
-    render conn, "index.html"
+    redirect! conn, to: "/#{Enum.first(Minion.other)}"
   end
 
   get "/:node" do
