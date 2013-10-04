@@ -21,12 +21,13 @@
 		<ul class="nav nav-tabs">
 		  <%= lc node inlist @nodes do %>
   			<% [name, host] = String.split(to_string(node), "@") %>
-
-	  		<%= if String.contains?(to_string(node), to_string(@selected_node)) do %>
-		  		<li class="active"><a href="/<%= node %>"><%= host %></a></li>
-				<% else %>
-		  		<li><a href="/<%= node %>"><%= host %></a></li>
-				<% end %>
+	  		<%= if String.contains?(to_string(name), "gru") do %>
+		  		<%= if String.contains?(to_string(node), to_string(@selected_node)) do %>
+			  		<li class="active"><a href="/<%= node %>"><%= host %></a></li>
+					<% else %>
+			  		<li><a href="/<%= node %>"><%= host %></a></li>
+					<% end %>
+			  <% end %>
 		  <% end %>
 		</ul>
 
