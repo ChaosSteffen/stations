@@ -22,28 +22,34 @@ defmodule ApplicationRouter do
     conn = conn.assign(:nodes, Minion.other)
     conn = conn.assign(:selected_node, selected_node)
 
-    pids = Enum.map([:current_station, :stations, :mpd_daemon_last_run], fn(keyword) ->
-      {Node.spawn_link(:"#{selected_node}", Minion.State, :get, [self, "#{keyword}"]), keyword}
+    remote_keys = [:current_station, :stations, :mpd_daemon_last_run, :volume]
+
+    wait_for_values = ask_for_values(selected_node, remote_keys)
+
+    await(conn, on_wake_up(&1, &2, wait_for_values, remote_keys))
+  end
+
+  def on_wake_up(message, conn, wait_for_values, remote_keys) do
+    conn = wait_for_values.(message, conn)
+
+    if Keyword.has_key?(conn.assigns, :current_station) and Keyword.has_key?(conn.assigns, :stations) and Keyword.has_key?(conn.assigns, :mpd_daemon_last_run) and Keyword.has_key?(conn.assigns, :volume) do
+      render conn, "index.html"
+    else 
+      await(conn, on_wake_up(&1, &2, wait_for_values, remote_keys))
+    end
+  end
+
+  def ask_for_values node, keys do
+    pids = Enum.map(keys, fn(keyword) ->
+      {Node.spawn_link(:"#{node}", Minion.State, :get, [self, "#{keyword}"]), keyword}
     end)
 
-    assign_values = fn(message, conn) ->
+    process_message = fn(message, conn) ->
       {pid, value} = message
 
       key = ListDict.get(pids, pid)
       
       conn.assign(key, value)
-    end
-
-    await(conn, on_wake_up(&1, &2, assign_values))
-  end
-
-  def on_wake_up(message, conn, assign_values) do
-    conn = assign_values.(message, conn)
-
-    if Keyword.has_key?(conn.assigns, :current_station) and Keyword.has_key?(conn.assigns, :stations) and Keyword.has_key?(conn.assigns, :mpd_daemon_last_run) do
-      render conn, "index.html"
-    else 
-      await(conn, on_wake_up(&1, &2, assign_values))
     end
   end
 
@@ -58,12 +64,29 @@ defmodule ApplicationRouter do
       end
 
       pid = Process.spawn(fn()->
-        Gru.repeat(1000, "mpc current -f \"%file%\"", fn(node, result) ->
+        Gru.repeat(500, "mpc -f \"%file%\"", fn(node, result) ->
           current_station = Minion.State.get("current_station")
 
           Minion.State.set("mpd_daemon_last_run", :calendar.universal_time)
 
-          case String.strip(result) do
+          [url, track_status, player_status] = String.split(String.strip(result), "\n")
+
+          [play_status, track_no, played_time, progress] = String.split(String.strip(track_status))
+          [volume, repeat, random, single, consume] = String.split(String.strip(player_status), "   ")
+
+          [played_time, _] = String.split(String.strip(played_time), "/")
+
+          case String.split(String.strip(played_time), ":") do
+            ["600", _] ->
+              System.cmd "mpc stop && mpc play"
+            _  ->
+              Minion.State.set("played_time", played_time)
+          end
+
+          [_, volume] = String.split(String.strip(volume))
+          Minion.State.set("volume", volume)
+
+          case String.strip(url) do
             ^current_station ->
               Minion.me
             _ ->
