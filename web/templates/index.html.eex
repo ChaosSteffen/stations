@@ -72,7 +72,7 @@
     				<p>Last run: <%= date_string_from_array(@mpd_daemon_last_run) %></p>
 
 						<div class="btn-group">
-					  	<button type="button" class="btn btn-default" onClick="jQuery.get('/<%= @selected_node %>/start_daemon').success(location.reload());";>Start daemon</button>
+					  	<button type="button" class="btn btn-default" onClick="jQuery.get('/<%= @selected_node %>/start_daemon').success(function(){location.reload()});";>Start daemon</button>
 						</div>
   				</div>
 				</div>
