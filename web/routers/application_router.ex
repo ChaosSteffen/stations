@@ -68,30 +68,33 @@ defmodule ApplicationRouter do
           current_station = Minion.State.get("current_station")
 
           Minion.State.set("mpd_daemon_last_run", :calendar.universal_time)
+          case String.split(String.strip(result), "\n") do
+            [url, track_status, player_status] ->
+              [play_status, track_no, played_time, progress] = String.split(String.strip(track_status))
+              [volume, repeat, random, single, consume] = String.split(String.strip(player_status), "   ")
 
-          [url, track_status, player_status] = String.split(String.strip(result), "\n")
+              [played_time, _] = String.split(String.strip(played_time), "/")
 
-          [play_status, track_no, played_time, progress] = String.split(String.strip(track_status))
-          [volume, repeat, random, single, consume] = String.split(String.strip(player_status), "   ")
+              case String.split(String.strip(played_time), ":") do
+                ["120", _] ->
+                  System.cmd "mpc clear && mpc add #{current_station} && mpc play"
+                _  ->
+                  Minion.State.set("played_time", played_time)
+              end
 
-          [played_time, _] = String.split(String.strip(played_time), "/")
+              [_, volume] = String.split(String.strip(volume))
+              Minion.State.set("volume", volume)
 
-          case String.split(String.strip(played_time), ":") do
-            ["600", _] ->
-              System.cmd "mpc stop && mpc play"
-            _  ->
-              Minion.State.set("played_time", played_time)
-          end
-
-          [_, volume] = String.split(String.strip(volume))
-          Minion.State.set("volume", volume)
-
-          case String.strip(url) do
-            ^current_station ->
-              Minion.me
+              case String.strip(url) do
+                ^current_station ->
+                  Minion.me
+                _ ->
+                  System.cmd "mpc clear && mpc add #{current_station} && mpc play"
+              end
             _ ->
               System.cmd "mpc clear && mpc add #{current_station} && mpc play"
           end
+
         end)
       end)
 
