@@ -20,6 +20,6 @@ defmodule Stations.Mixfile do
   defp deps do
     [ { :cowboy, github: "extend/cowboy" },
       { :dynamo, "0.1.0-dev", github: "elixir-lang/dynamo" },
-      { :gru, github: "BananaLtd/gru" } ]
+      { :gru, github: "BananaLtd/gru", branch: "experimental" } ]
   end
 end
